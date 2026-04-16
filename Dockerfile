@@ -20,5 +20,5 @@ WORKDIR /var/www/html
 
 EXPOSE 10000
 
-CMD ["bash", "-lc", "PORT=${PORT:-10000}; sed -ri \"s/Listen 80/Listen ${PORT}/g\" /etc/apache2/ports.conf; sed -ri \"s/:80>/:${PORT}>/g\" /etc/apache2/sites-available/000-default.conf; apache2-foreground"]
+CMD ["bash", "-lc", "PORT=${PORT:-10000}; DOCROOT=/var/www/html; if [ -f /var/www/html/arfxt/index.php ]; then DOCROOT=/var/www/html/arfxt; fi; sed -ri \"s#Listen 80#Listen ${PORT}#g\" /etc/apache2/ports.conf; sed -ri \"s#<VirtualHost \\*:80>#<VirtualHost *:${PORT}>#g\" /etc/apache2/sites-available/000-default.conf; sed -ri \"s#DocumentRoot /var/www/html#DocumentRoot ${DOCROOT}#g\" /etc/apache2/sites-available/000-default.conf; apache2-foreground"]
 
