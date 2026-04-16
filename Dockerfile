@@ -16,13 +16,9 @@ RUN sed -ri 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 # Copy source code ke web root
 COPY . /var/www/html/
 
-# Script startup untuk menyesuaikan Apache dengan PORT dari Render
-COPY docker/apache-start.sh /usr/local/bin/apache-start.sh
-RUN chmod +x /usr/local/bin/apache-start.sh
-
 WORKDIR /var/www/html
 
 EXPOSE 10000
 
-CMD ["/usr/local/bin/apache-start.sh"]
+CMD ["bash", "-lc", "PORT=${PORT:-10000}; sed -ri \"s/Listen 80/Listen ${PORT}/g\" /etc/apache2/ports.conf; sed -ri \"s/:80>/:${PORT}>/g\" /etc/apache2/sites-available/000-default.conf; apache2-foreground"]
 
